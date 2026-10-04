@@ -1,0 +1,50 @@
+# ============================================================
+#  YouTube AI Agent — Daily Digest Workflow
+#  Runs every day at 6:00 AM IST (= 00:30 UTC)
+#
+#  Required GitHub Secrets (Settings → Secrets → Actions):
+#    - YOUTUBE_API_KEY
+#    - GMAIL_USER
+#    - GMAIL_PASS
+#    - MAIL_TO
+# ============================================================
+
+name: Daily AI YouTube Digest
+
+on:
+  # ── Scheduled trigger: 6:00 AM IST = 00:30 UTC ──────────────
+  schedule:
+    - cron: '30 0 * * *'   # min hour day month weekday  →  00:30 UTC daily
+
+  # ── Manual trigger: run anytime from GitHub UI ───────────────
+  workflow_dispatch:
+
+jobs:
+  send-digest:
+    name: Fetch Videos & Send Email
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Step 1: Check out the repository ──────────────────────
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      # ── Step 2: Set up Node.js ────────────────────────────────
+      - name: 🟢 Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'          # Caches node_modules between runs for speed
+
+      # ── Step 3: Install dependencies ──────────────────────────
+      - name: 📦 Install dependencies
+        run: npm install        # Installs from package.json (commit package-lock.json later for npm ci)
+
+      # ── Step 4: Run the agent ─────────────────────────────────
+      - name: 🤖 Run YouTube AI Agent
+        env:
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          GMAIL_USER:      ${{ secrets.GMAIL_USER }}
+          GMAIL_PASS:      ${{ secrets.GMAIL_PASS }}
+          MAIL_TO:         ${{ secrets.MAIL_TO }}
+        run: node index.js
