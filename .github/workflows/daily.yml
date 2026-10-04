@@ -38,7 +38,7 @@ jobs:
 
       # ── Step 3: Install dependencies ──────────────────────────
       - name: 📦 Install dependencies
-        run: npm install        # Installs from package.json (commit package-lock.json later for npm ci)
+        run: npm ci             # Installs exactly from package-lock.json for reliability
 
       # ── Step 4: Run the agent ─────────────────────────────────
       - name: 🤖 Run YouTube AI Agent
